@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEPL Vision Metrology Workstation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0c0d0e;
+            --surface: #141619;
+            --surface-card: #1b1e22;
+            --surface-hover: #22262c;
+            --border: #282d34;
+            --text-primary: #f0f2f5;
+            --text-secondary: #8c939e;
+            --brand: #2563eb;
+            --brand-hover: #1d4ed8;
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.2);
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Enterprise Header */
+        header {
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background-color: var(--brand);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .system-heading {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .telemetry-badges {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-online { background-color: var(--success); box-shadow: 0 0 8px var(--success); }
+        .dot-offline { background-color: var(--danger); box-shadow: 0 0 8px var(--danger); }
+
+        /* Main Viewport Workspace */
+        main {
+            flex: 1;
+            padding: 16px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow: hidden;
+        }
+
+        .viewport-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .cam-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .cam-card-header {
+            padding: 10px 16px;
+            background-color: var(--surface-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cam-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stream-box {
+            flex: 1;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stream-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .cam-actions {
+            padding: 10px 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background-color: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Interactive Buttons */
+        .btn-shot {
+            background-color: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-shot:hover {
+            background-color: var(--brand);
+            border-color: var(--brand);
+            color: #fff;
+        }
+
+        /* Bottom Fixed Action Bar */
+        .control-bar {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-action {
+            height: 48px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-accept {
+            background-color: var(--success);
+            color: #fff;
+            flex: 2;
+        }
+
+        .btn-accept:hover {
+            box-shadow: 0 0 16px var(--success-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-reject {
+            background-color: var(--danger);
+            color: #fff;
+            flex: 2;
+        }
+
+        .btn-reject:hover {
+            box-shadow: 0 0 16px var(--danger-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-flush {
+            background-color: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .btn-flush:hover {
+            background-color: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        /* Toast / Notification Banner */
+        footer {
+            height: 32px;
+            background-color: var(--surface-card);
+            border-top: 1px solid var(--border);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title-box">
+            <span class="brand-badge">AEPL</span>
+            <span class="system-heading">AEPL 21 01 00 401 V3 · Automated Vision Metrology Suite</span>
+        </div>
+        <div class="telemetry-badges">
+            <div class="badge">
+                <div id="dot-cam1" class="status-dot dot-offline"></div>
+                <span>CAM 1 (TOP)</span>
+            </div>
+            <div class="badge">
+                <div id="dot-cam2" class="status-dot dot-offline"></div>
+                <span>CAM 2 (SIDE)</span>
+            </div>
+            <div class="badge" id="buffer-badge">BUFFER: 0 / 4</div>
+        </div>
+    </header>
+
+    <main>
+        <div class="viewport-grid">
+            <!-- Camera 1 Card -->
+            <div class="cam-card">
+                <div class="cam-card-header">
+                    <span class="cam-title">Primary Viewport · Top Orthogonal</span>
+                    <span id="cam1-status-label" class="badge">Checking...</span>
+                </div>
+                <div class="stream-box">
+                    <img class="stream-img" src="/stream/cam1" alt="Camera 1 Stream">
+                </div>
+                <div class="cam-actions">
+                    <button class="btn-shot" onclick="captureShot('cam1_shot1')">Capture View A (Shot 1)</button>
+                    <button class="btn-shot" onclick="captureShot('cam1_shot2')">Capture View B (Shot 2)</button>
+                </div>
+            </div>
+
+            <!-- Camera 2 Card -->
+            <div class="cam-card">
+                <div class="cam-card-header">
+                    <span class="cam-title">Secondary Viewport · Lateral Profile</span>
+                    <span id="cam2-status-label" class="badge">Checking...</span>
+                </div>
+                <div class="stream-box">
+                    <img class="stream-img" src="/stream/cam2" alt="Camera 2 Stream">
+                </div>
+                <div class="cam-actions">
+                    <button class="btn-shot" onclick="captureShot('cam2_shot1')">Capture Profile A (Shot 1)</button>
+                    <button class="btn-shot" onclick="captureShot('cam2_shot2')">Capture Profile B (Shot 2)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direct Actions Bar -->
+        <div class="control-bar">
+            <button class="btn-action btn-accept" onclick="submitDecision('ok')">
+                ACCEPT PART [ OK ] <small style="opacity: 0.8;">(Ctrl + O)</small>
+            </button>
+            <button class="btn-action btn-reject" onclick="submitDecision('not_ok')">
+                REJECT PART [ NOT OK ] <small style="opacity: 0.8;">(Ctrl + N)</small>
+            </button>
+            <button class="btn-action btn-flush" onclick="clearBuffer()">
+                Flush Buffer <small>(Ctrl + L)</small>
+            </button>
+        </div>
+    </main>
+
+    <footer>
+        <span id="sys-status">System Initialized · Storage Volume: C:\Camera_Inspection_App</span>
+        <span>Asynchronous Zero-Stutter IO Engine Active</span>
+    </footer>
+
+    <script>
+        // Real-time Telemetry Poller
+        async function updateTelemetry() {
+            try {
+                const res = await fetch('/api/telemetry');
+                const data = await res.json();
+
+                const d1 = document.getElementById('dot-cam1');
+                const d2 = document.getElementById('dot-cam2');
+                const l1 = document.getElementById('cam1-status-label');
+                const l2 = document.getElementById('cam2-status-label');
+
+                if (data.cam1.connected) {
+                    d1.className = 'status-dot dot-online';
+                    l1.innerText = 'ONLINE (' + data.cam1.device + ')';
+                    l1.style.color = 'var(--success)';
+                } else {
+                    d1.className = 'status-dot dot-offline';
+                    l1.innerText = 'DISCONNECTED';
+                    l1.style.color = 'var(--danger)';
+                }
+
+                if (data.cam2.connected) {
+                    d2.className = 'status-dot dot-online';
+                    l2.innerText = 'ONLINE (' + data.cam2.device + ')';
+                    l2.style.color = 'var(--success)';
+                } else {
+                    d2.className = 'status-dot dot-offline';
+                    l2.innerText = 'DISCONNECTED';
+                    l2.style.color = 'var(--danger)';
+                }
+
+                document.getElementById('buffer-badge').innerText = `BUFFER: ${data.buffer_loaded} / 4`;
+            } catch (err) {
+                console.error("Telemetry error", err);
+            }
+        }
+        setInterval(updateTelemetry, 1500);
+        updateTelemetry();
+
+        // Capture Specific Shot
+        async function captureShot(shotKey) {
+            const res = await fetch('/api/capture_single', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ shot_key: shotKey })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                document.getElementById('sys-status').innerText = `✓ Buffer updated: ${shotKey}`;
+                updateTelemetry();
+            } else {
+                alert(data.error);
+            }
+        }
+
+        // Decision Commit (OK / NOT OK)
+        async function submitDecision(decision) {
+            document.getElementById('sys-status').innerText = `Committing ${decision.toUpperCase()} snapshot to disk...`;
+            const res = await fetch('/api/submit_decision', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ decision: decision })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                document.getElementById('sys-status').innerText = `✓ Saved ${data.files_count} frames to [${decision.toUpperCase()}] at ${data.timestamp}`;
+                updateTelemetry();
+            } else {
+                alert(data.error);
+            }
+        }
+
+        // Clear Buffer
+        async function clearBuffer() {
+            await fetch('/api/clear_buffer', { method: 'POST' });
+            document.getElementById('sys-status').innerText = 'Buffer cleared · Ready for new part cycle';
+            updateTelemetry();
+        }
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'o' || e.key === 'O')) {
+                e.preventDefault();
+                submitDecision('ok');
+            } else if ((e.ctrlKey || e.metaKey) && (e.key === 'n' || e.key === 'N')) {
+                e.preventDefault();
+                submitDecision('not_ok');
+            } else if ((e.ctrlKey || e.metaKey) && (e.key === 'l' || e.key === 'L')) {
+                e.preventDefault();
+                clearBuffer();
+            }
+        });
+    </script>
+</body>
+</html>
